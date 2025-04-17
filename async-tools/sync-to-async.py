@@ -3,7 +3,7 @@ from typing import Callable, Coroutine, Any
 from asyncio import Future, get_running_loop
 
 
-async def run_in_executor(fn, *args, **kwargs) -> Future:
+async def run_in_executor(fn: callable, *args, **kwargs) -> Future:
     """
     Runs a synchronous function as asynchronous.
     :param fn: sync func
@@ -15,7 +15,7 @@ async def run_in_executor(fn, *args, **kwargs) -> Future:
     return loop.run_in_executor(None, functools.partial(fn, *args, **kwargs))
 
 
-def asyncify(fn) -> Callable[..., Coroutine[Any, Any, Any]]:
+def asyncify(fn: callable) -> Callable[..., Coroutine[Any, Any, Any]]:
     """
     Returns a synchronous function as a coroutine.
     :param fn: sync function
