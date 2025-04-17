@@ -1,5 +1,6 @@
 import functools
-from asyncio import Future, get_running_loop, run
+from typing import Callable, Coroutine, Any
+from asyncio import Future, get_running_loop
 
 
 async def run_in_executor(fn, *args, **kwargs) -> Future:
@@ -14,9 +15,14 @@ async def run_in_executor(fn, *args, **kwargs) -> Future:
     return loop.run_in_executor(None, functools.partial(fn, *args, **kwargs))
 
 
-# def asyncify(fn):
-#     @functools.wraps(fn)
-#     async def wrapper(*args, **kwargs):
-#         loop = asyncio.get_running_loop()
-#         return await loop.run_in_executor(None, functools.partial(fn, *args, **kwargs))
-#     return wrapper
+def asyncify(fn) -> Callable[..., Coroutine[Any, Any, Any]]:
+    """
+    Returns a synchronous function as a coroutine.
+    :param fn: sync function
+    :return: coroutine of sync function
+    """
+    @functools.wraps(fn)  # Delivers fn attributes to new async fn.
+    async def wrapper(*args, **kwargs):
+        loop = get_running_loop()
+        return await loop.run_in_executor(None, functools.partial(fn, *args, **kwargs))
+    return wrapper
