@@ -1,5 +1,5 @@
 import functools
-from asyncio import get_event_loop, Future
+from asyncio import Future, get_running_loop, run
 
 
 async def run_in_executor(fn, *args, **kwargs) -> Future:
@@ -10,7 +10,7 @@ async def run_in_executor(fn, *args, **kwargs) -> Future:
     :param kwargs:
     :return:
     """
-    loop = get_event_loop()
+    loop = get_running_loop()
     return loop.run_in_executor(None, functools.partial(fn, *args, **kwargs))
 
 
