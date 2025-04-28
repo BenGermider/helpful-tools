@@ -1,4 +1,5 @@
 from datetime import timedelta
+from typing import Any, Dict
 
 from fastapi import FastAPI, Depends, status, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
@@ -20,7 +21,12 @@ current_fake_db = {
 
 
 @app.post('/login')
-async def login(form_data: OAuth2PasswordRequestForm = Depends()):
+async def login(form_data: OAuth2PasswordRequestForm = Depends()) -> Dict[str, Any]:
+    """
+    Checks for valid log in
+    :param form_data: log in data of user
+    :return:
+    """
     user = current_fake_db.get(form_data.username, None)
     if not user or user["password"] != form_data.password:
         raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED, detail='Incorrect username or password')
@@ -35,7 +41,7 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
 
 
 @app.get('/protected')
-async def protected(token: str = Depends(oauth2_scheme)):
+async def protected(token: str = Depends(oauth2_scheme)) -> Dict[str, str]:
     username = await verify_token(token)
     return {"message": f"Welcome to the Command Base, {username}"}
 
